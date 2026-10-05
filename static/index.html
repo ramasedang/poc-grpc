@@ -1,0 +1,47 @@
+<!doctype html><html lang=id><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<title>NusaKirim — Kirim Cepat ke Seluruh Nusantara</title>
+<style>
+ :root{--nk:#1d4ed8;--nk2:#f97316;--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mut:#64748b}
+ *{box-sizing:border-box} body{margin:0;font-family:system-ui,Segoe UI,Arial;background:var(--bg);color:var(--tx)}
+ header{background:var(--nk);color:#fff;padding:0 22px;display:flex;align-items:center;gap:18px;height:58px}
+ header .logo{font-weight:800;font-size:20px} header .logo span{color:var(--nk2)}
+ nav{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+ nav a{color:#dbeafe;text-decoration:none;padding:8px 11px;border-radius:8px;font-size:14px}
+ nav a:hover,nav a.active{background:rgba(255,255,255,.15);color:#fff}
+ .auth{font-size:13px;color:#bfdbfe} .auth a{color:#fff}
+ main{max-width:940px;margin:26px auto;padding:0 18px}
+ h1{font-size:30px;margin:.2em 0} h2{margin-top:0}
+ .card{background:var(--card);border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin:14px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+ .hero{background:linear-gradient(120deg,#1d4ed8,#2563eb);color:#fff;border:0}.hero p{color:#dbeafe;max-width:560px}
+ input,select,textarea{font:inherit;padding:11px 12px;border:1px solid #cbd5e1;border-radius:9px;width:100%;background:#fff;color:var(--tx)}
+ .hero input{border:0} label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+ button{background:var(--nk2);color:#fff;border:0;padding:11px 18px;border-radius:9px;font-weight:600;cursor:pointer}
+ button:hover{filter:brightness(1.05)}
+ .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+ a.ship{display:block;text-decoration:none;color:inherit;border:1px solid #e2e8f0;border-radius:11px;padding:13px;background:#fff}
+ a.ship:hover{border-color:var(--nk)}
+ .badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:20px;background:#e0e7ff;color:#3730a3}
+ .st{font-size:12px;color:var(--mut)} .muted{color:var(--mut);font-size:13px} .stars{color:var(--nk2)}
+ table{border-collapse:collapse;width:100%} td,th{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left;font-size:14px}
+ pre{background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:13px;white-space:pre-wrap;word-break:break-word}
+ footer{color:var(--mut);text-align:center;font-size:12px;padding:26px}
+</style></head><body>
+<header>
+ <div class="logo">Nusa<span>Kirim</span></div>
+ <nav>
+  <a href="#/">Beranda</a>
+  <a href="#/track">Lacak</a>
+  <a href="#/dashboard">Kiriman Saya</a>
+  <a href="#/documents">Dokumen</a>
+  <a href="#/feedback">Ulasan</a>
+  <a href="#/account">Akun</a>
+  <a href="#/ops">Panel Ops</a>
+ </nav>
+ <div class="auth" id="auth"></div>
+</header>
+<main id="view"></main>
+<footer>© 2024 NusaKirim Logistics · Melayani 514 kota di Indonesia</footer>
+<script src="app.js"></script>
+</body></html>

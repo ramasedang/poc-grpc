@@ -1,0 +1,13 @@
+========================================
+   NUSAKIRIM - INVOICE PENGIRIMAN
+========================================
+No. Resi     : NK1001
+Pengirim     : Toko Elektronik Jaya
+Penerima     : Budi Santoso
+Alamat       : Jl. Merdeka 10, Bandung
+Berat        : 2.5 kg
+Layanan      : Reguler
+Biaya        : Rp45.000
+Status       : In Transit
+----------------------------------------
+Terima kasih telah menggunakan NusaKirim.

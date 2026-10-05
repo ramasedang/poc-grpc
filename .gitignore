@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+nusakirim.db
+shipping_pb2.py
+shipping_pb2_grpc.py
+.DS_Store

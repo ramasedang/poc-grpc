@@ -1,0 +1,63 @@
+# NusaKirim shipping target — browser-only gRPC-Web.
+#   backend : gRPC ShipmentService (the target API)         :50051
+#   gateway : decrypts encrypted grpc-web-text, forwards to gRPC  (internal)
+#   caddy   : serves the static SPA + routes gRPC-Web        :80 (ACME) / :8181
+# Browser speaks encrypted application/grpc-web-text (like the real target).
+# INTENTIONALLY VULNERABLE — keep behind the IP allowlist.
+
+services:
+  backend:
+    build: .
+    image: nusakirim
+    container_name: nusakirim-backend
+    command: python server.py
+    environment:
+      GRPC_PORT: "50051"
+    ports:
+      - "50051:50051"     # exposed so gRPC can also be attacked directly
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket;socket.create_connection(('localhost',50051),2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks: [labnet]
+
+  gateway:
+    build: .
+    image: nusakirim
+    container_name: nusakirim-gateway
+    restart: unless-stopped
+    command: python gateway.py
+    environment:
+      GRPC_TARGET: "backend:50051"
+      GATEWAY_PORT: "8080"
+      # GRPCWEB_AES_KEY: override the app-layer key (default is baked in app.js)
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [labnet]
+
+  caddy:
+    image: caddy:2
+    container_name: nusakirim-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"          # ACME challenge / cert renewals only
+      - "8181:8181"      # the site (HTTPS)
+      - "50443:50443"    # native gRPC over TLS (grpcs://pocpoc.my.id:50443)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./static:/srv:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - gateway
+    networks: [labnet]
+
+networks:
+  labnet:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

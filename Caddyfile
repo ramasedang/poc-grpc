@@ -1,0 +1,28 @@
+# NusaKirim on :8181 (HTTPS). Static SPA + encrypted gRPC-Web routing.
+#   /nusakirim.ShipmentService/*  -> gateway (decrypt grpc-web-text -> gRPC backend)
+#   everything else               -> static files (the browser gRPC-Web app)
+# Port 80 stays reachable for the Let's Encrypt HTTP-01 challenge / renewals.
+pocpoc.my.id:8181, www.pocpoc.my.id:8181 {
+	encode gzip
+
+	@grpcweb path /nusakirim.ShipmentService/*
+	handle @grpcweb {
+		reverse_proxy gateway:8080
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}
+
+# Native gRPC over TLS on the domain: grpcs://pocpoc.my.id:50443
+# Caddy terminates TLS (HTTP/2) and forwards to the backend over h2c.
+pocpoc.my.id:50443, www.pocpoc.my.id:50443 {
+	reverse_proxy backend:50051 {
+		transport http {
+			versions h2c
+		}
+	}
+}

@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+package nusakirim;
+
+// NusaKirim ShipmentService
+// Shipping platform API for customer and operations features:
+// accounts, shipment tracking & management, documents, partner
+// integration, customer feedback, and the operations console.
+
+service ShipmentService {
+  // Accounts
+  rpc Login                 (LoginRequest)         returns (AuthResponse);
+  rpc UpdateAccount         (UpdateAccountRequest) returns (Customer);
+
+  // Shipment lookup
+  rpc TrackShipment         (TrackRequest)         returns (Shipment);        // public tracking by AWB
+  rpc SearchShipments       (SearchRequest)        returns (ShipmentList);    // search by recipient
+  rpc GetShipment           (ShipmentIdRequest)    returns (Shipment);        // shipment detail by id
+  rpc CancelShipment        (ShipmentIdRequest)    returns (StatusResponse);
+
+  // Documents & partners
+  rpc DownloadDocument      (DocumentRequest)      returns (DocumentResponse);   // invoice / label / POD
+  rpc FetchExternalTracking (UrlRequest)           returns (FetchResponse);      // partner-courier lookup
+  rpc ImportShipmentBatch   (ImportRequest)        returns (ImportResponse);     // bulk shipment import
+
+  // Feedback
+  rpc SubmitFeedback        (FeedbackRequest)      returns (FeedbackList);
+  rpc ListFeedback          (Empty)                returns (FeedbackList);
+
+  // Operations / diagnostics
+  rpc CheckHubConnectivity  (HubRequest)           returns (DiagnosticResponse);
+  rpc RunMaintenance        (MaintenanceRequest)   returns (DiagnosticResponse);
+  rpc SystemInfo            (Empty)                returns (SystemInfoResponse);
+
+  // Administration
+  rpc ResetDatabase         (ResetRequest)         returns (StatusResponse);     // restore seed data (operator)
+}
+
+// ---------------------------------------------------------------------------
+
+message Empty {}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message Customer {
+  int64  id        = 1;
+  string username  = 2;
+  string email     = 3;
+  string role      = 4;   // "customer" | "staff"
+  string full_name = 5;
+  string phone     = 6;
+  string address   = 7;
+}
+
+message AuthResponse {
+  bool     ok       = 1;
+  string   token    = 2;   // session token (JWT)
+  string   message  = 3;
+  Customer customer = 4;
+}
+
+message UpdateAccountRequest {
+  int64  customer_id = 1;
+  string email       = 2;
+  string phone       = 3;
+  string address     = 4;
+  string role        = 5;   // account tier
+}
+
+message TrackRequest {
+  string tracking_no = 1;
+}
+
+message SearchRequest {
+  string keyword = 1;       // recipient-name keyword
+}
+
+message ShipmentIdRequest {
+  int64 id = 1;
+}
+
+message Shipment {
+  int64  id                = 1;
+  string tracking_no       = 2;
+  string sender_name       = 3;
+  string recipient_name    = 4;
+  string recipient_address = 5;
+  string recipient_phone   = 6;
+  double weight_kg         = 7;
+  string status            = 8;
+  int64  cost              = 9;
+  string notes             = 10;
+  int64  owner_id          = 11;
+}
+
+message ShipmentList {
+  repeated Shipment shipments = 1;
+  string debug_query          = 2;   // echoed query string (diagnostics)
+}
+
+message DocumentRequest {
+  string filename = 1;      // e.g. "invoice_NK1001.txt"
+}
+
+message DocumentResponse {
+  string content       = 1;
+  string resolved_path = 2;
+}
+
+message UrlRequest {
+  string url = 1;           // partner tracking endpoint
+}
+
+message FetchResponse {
+  int32  status = 1;
+  string body   = 2;
+}
+
+message ImportRequest {
+  bytes batch = 1;          // serialized shipment batch
+}
+
+message ImportResponse {
+  string result   = 1;
+  int32  imported = 2;
+}
+
+message FeedbackRequest {
+  string name    = 1;
+  int32  rating  = 2;       // 1..5
+  string comment = 3;
+}
+
+message Feedback {
+  string name    = 1;
+  int32  rating  = 2;
+  string comment = 3;
+}
+
+message FeedbackList {
+  repeated Feedback items = 1;
+}
+
+message HubRequest {
+  string hub_host = 1;      // branch/hub hostname to diagnose
+}
+
+message MaintenanceRequest {
+  string task = 1;          // maintenance task identifier
+}
+
+message DiagnosticResponse {
+  string output    = 1;
+  int32  exit_code = 2;
+  string command   = 3;
+}
+
+message StatusResponse {
+  bool   ok      = 1;
+  string message = 2;
+}
+
+message ResetRequest {
+  string password = 1;      // operator password
+}
+
+message SystemInfoResponse {
+  map<string, string> environment = 1;
+  string signing_key              = 2;
+  string version                  = 3;
+}
